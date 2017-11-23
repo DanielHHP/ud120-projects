@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
-
+from sklearn.cluster import KMeans
 
 
 
@@ -49,28 +49,42 @@ data_dict.pop("TOTAL", 0)
 feature_1 = "salary"
 feature_2 = "exercised_stock_options"
 poi  = "poi"
-features_list = [poi, feature_1, feature_2]
+# features_list = [poi, feature_1, feature_2]
+# add total_payments into features_list
+features_list = [poi, feature_1, feature_2, "total_payments"]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
+# find max and min for exercised_stock_options and salary
+
+def print_min_max_values(dictionary, feature_name, d_type):
+    values = [d_type(f[feature_name]) for p, f in dictionary.iteritems() if f[feature_name] != "NaN"]
+    print "max", feature_name, max(values)
+    print "min", feature_name, min(values)
+
+print_min_max_values(data_dict, "exercised_stock_options", float)
+print_min_max_values(data_dict, "salary", float)
 
 ### in the "clustering with 3 features" part of the mini-project,
 ### you'll want to change this line to 
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
-for f1, f2 in finance_features:
+#for f1, f2 in finance_features:
+for f1, f2, _ in finance_features:
     plt.scatter( f1, f2 )
 plt.show()
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
 
-
+kmeans = KMeans(n_clusters=2)
+kmeans.fit(data)
+pred = kmeans.predict(data)
 
 
 ### rename the "name" parameter when you change the number of features
 ### so that the figure gets saved to a different file
 try:
-    Draw(pred, finance_features, poi, mark_poi=False, name="clusters.pdf", f1_name=feature_1, f2_name=feature_2)
+    Draw(pred, finance_features, poi, mark_poi=False, name="clusters3.pdf", f1_name=feature_1, f2_name=feature_2)
 except NameError:
     print "no predictions object named pred found, no clusters to plot"
