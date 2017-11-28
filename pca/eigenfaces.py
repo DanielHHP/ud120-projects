@@ -37,7 +37,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 ###############################################################################
 # Download the data, if not already on disk and load it as numpy arrays
-lfw_people = fetch_lfw_people(min_faces_per_person=70, resize=0.4)
+lfw_people = fetch_lfw_people(data_home="scikit_learn_data", min_faces_per_person=70, resize=0.4)
 
 # introspect the images arrays to find the shapes (for plotting)
 n_samples, h, w = lfw_people.images.shape
@@ -72,6 +72,10 @@ print "Extracting the top %d eigenfaces from %d faces" % (n_components, X_train.
 t0 = time()
 pca = RandomizedPCA(n_components=n_components, whiten=True).fit(X_train)
 print "done in %0.3fs" % (time() - t0)
+
+# show explained_variance_ratio
+print "explained_variance_ratio:"
+print pca.explained_variance_ratio_
 
 eigenfaces = pca.components_.reshape((n_components, h, w))
 
